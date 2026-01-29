@@ -23,6 +23,7 @@ export default function CourseDetail() {
       const key = `progress-${courseData.id}-${lesson.id}`;
       const progress = Number(localStorage.getItem(key) || 0);
 
+      // 95% of 60s = 57s (per requirements)
       if (progress >= 57) {
         completed++;
       }
@@ -38,28 +39,46 @@ export default function CourseDetail() {
   function handleCertificate() {
     if (window.generateCertificate) {
       window.generateCertificate(course.title, "Test User");
+    } else {
+      alert("Certificate function not available");
     }
   }
 
   if (!course) return <p>Loading...</p>;
 
   return (
-    <div className="course-detail" data-testid="course-detail-page">
+    <div
+      className="course-detail"
+      data-testid="course-detail-page"
+    >
       <h1 data-testid="course-title">{course.title}</h1>
       <p>{course.description}</p>
 
-      <h3>Completion: {completion}%</h3>
+      {/* PROGRESS */}
+      <div className="progress-wrapper">
+        <div className="progress-label">
+          Completion: {completion}%
+        </div>
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${completion}%` }}
+          />
+        </div>
+      </div>
 
+      {/* CERTIFICATE */}
       {completion === 100 && (
         <button
-          data-testid="generate-certificate-button"
           className="certificate-btn"
+          data-testid="generate-certificate-button"
           onClick={handleCertificate}
         >
           Generate Certificate
         </button>
       )}
 
+      {/* LESSONS */}
       <h2>Lessons</h2>
       <ul className="lesson-list">
         {course.lessons.map(lesson => (
@@ -68,7 +87,7 @@ export default function CourseDetail() {
               to={`/courses/${course.id}/lessons/${lesson.id}`}
               data-testid={`lesson-link-${lesson.id}`}
             >
-              {lesson.title} ({lesson.duration})
+              {lesson.title} — {lesson.duration}
             </Link>
           </li>
         ))}
