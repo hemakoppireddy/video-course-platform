@@ -36,6 +36,13 @@ export default function Catalog() {
             className="course-card"
             data-testid={`course-card-${course.id}`}
           >
+            {/* Thumbnail */}
+            <img
+              src={course.thumbnail}
+              alt={course.title}
+              className="course-thumb"
+            />
+
             <h2>{course.title}</h2>
             <p>{course.instructor}</p>
           </Link>
