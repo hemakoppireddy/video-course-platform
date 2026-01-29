@@ -1,0 +1,21 @@
+.course-detail {
+  padding: 20px;
+  background: white;
+}
+
+.lesson-list {
+  list-style: none;
+  padding: 0;
+}
+
+.lesson-list li {
+  margin: 10px 0;
+}
+
+.certificate-btn {
+  background: green;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}

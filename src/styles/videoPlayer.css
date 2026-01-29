@@ -1,0 +1,45 @@
+.video-page {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: #f2f2f2;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar [data-testid="current-lesson-item"] {
+  font-weight: bold;
+  color: blue;
+}
+
+.player-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.notes-section {
+  margin-top: 20px;
+}
+
+.notes-section input {
+  width: 100%;
+  padding: 8px;
+}
+
+.notes-section button {
+  margin-top: 10px;
+  padding: 8px;
+}
+
+.note-item {
+  background: #eee;
+  padding: 5px;
+  margin-top: 5px;
+}
