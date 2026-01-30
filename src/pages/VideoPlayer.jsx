@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import LessonList from "../components/LessonList";
 import { useProgressStore } from "../store/useProgressStore";
 import "../styles/videoPlayer.css";
 
 export default function VideoPlayer() {
   const { courseId, lessonId } = useParams();
+  const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [noteText, setNoteText] = useState("");
   const videoRef = useRef(null);
@@ -22,6 +23,7 @@ export default function VideoPlayer() {
 
   const [notes, setNotes] = useState([]);
 
+  // Fetch course + load notes
   useEffect(() => {
     fetch(`/api/course_${courseId}.json`)
       .then(res => res.json())
@@ -31,6 +33,7 @@ export default function VideoPlayer() {
       });
   }, [courseId, lessonId]);
 
+  // Video logic
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -38,12 +41,34 @@ export default function VideoPlayer() {
     const savedTime = getProgress(progressKey);
     video.currentTime = savedTime;
 
+    // Expose for test contract
     window.getInitialPlaybackTime = () => savedTime;
 
+    // Save progress every 5s + notify course page
     const interval = setInterval(() => {
       setProgress(progressKey, video.currentTime);
+      window.dispatchEvent(new Event("progress-updated"));
     }, 5000);
 
+    // Auto go to next lesson when video ends
+    function handleEnded() {
+      if (!course) return;
+
+      const index = course.lessons.findIndex(
+        l => l.id === Number(lessonId)
+      );
+
+      const next = course.lessons[index + 1];
+      if (next) {
+        navigate(
+          `/courses/${courseId}/lessons/${next.id}`
+        );
+      }
+    }
+
+    video.addEventListener("ended", handleEnded);
+
+    // Keyboard + test API
     window.videoPlayer = {
       togglePlay: () => {
         video.paused ? video.play() : video.pause();
@@ -72,9 +97,11 @@ export default function VideoPlayer() {
       delete window.videoPlayer;
       delete window.getInitialPlaybackTime;
       window.removeEventListener("keydown", handleKeys);
+      video.removeEventListener("ended", handleEnded);
     };
-  }, [lessonId]);
+  }, [lessonId, course]);
 
+  // Notes
   function addNote() {
     if (!noteText.trim()) return;
 
