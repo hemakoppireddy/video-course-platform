@@ -2,13 +2,28 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Catalog from "./pages/Catalog";
 import CourseDetail from "./pages/CourseDetail";
 import VideoPlayer from "./pages/VideoPlayer";
+import { generatePDF } from "./utils/certificate";
+import { useEffect } from "react";
 
 export default function App() {
+  useEffect(() => {
+    window.generateCertificate = (courseTitle, studentName) => {
+      generatePDF(courseTitle, studentName);
+    };
+
+    return () => {
+      delete window.generateCertificate;
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Catalog />} />
-        <Route path="/courses/:courseId" element={<CourseDetail />} />
+        <Route
+          path="/courses/:courseId"
+          element={<CourseDetail />}
+        />
         <Route
           path="/courses/:courseId/lessons/:lessonId"
           element={<VideoPlayer />}
