@@ -83,7 +83,7 @@ video-course-platform/
 ├── .env.example
 └── README.md
 
-``
+```
 
 ---
 
