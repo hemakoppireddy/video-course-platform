@@ -50,6 +50,12 @@ This project demonstrates media playback, progress tracking, timestamped notes, 
 
 ---
 
+## Demo Video
+
+[Demo Link](https://drive.google.com/file/d/1oHiOAFUBolvphXN032DSfTEfWuAHkoX1/view?usp=sharing)
+
+---
+
 ##  Project Structure
 
 ```
