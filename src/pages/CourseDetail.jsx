@@ -22,8 +22,6 @@ export default function CourseDetail() {
     courseData.lessons.forEach(lesson => {
       const key = `progress-${courseData.id}-${lesson.id}`;
       const progress = Number(localStorage.getItem(key) || 0);
-
-      // 95% of 60s = 57s (per requirements)
       if (progress >= 57) {
         completed++;
       }
