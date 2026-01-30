@@ -1,23 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import LessonList from "../components/LessonList";
+import { useProgressStore } from "../store/useProgressStore";
 import "../styles/videoPlayer.css";
 
 export default function VideoPlayer() {
   const { courseId, lessonId } = useParams();
   const [course, setCourse] = useState(null);
-  const [notes, setNotes] = useState([]);
   const [noteText, setNoteText] = useState("");
   const videoRef = useRef(null);
 
+  const {
+    getNotes,
+    saveNote,
+    getProgress,
+    setProgress
+  } = useProgressStore();
+
   const progressKey = `progress-${courseId}-${lessonId}`;
   const notesKey = `notes-${courseId}-${lessonId}`;
+
+  const [notes, setNotes] = useState([]);
 
   useEffect(() => {
     fetch(`/api/course_${courseId}.json`)
       .then(res => res.json())
       .then(data => {
         setCourse(data);
-        loadNotes();
+        setNotes(getNotes(notesKey));
       });
   }, [courseId, lessonId]);
 
@@ -25,13 +35,13 @@ export default function VideoPlayer() {
     const video = videoRef.current;
     if (!video) return;
 
-    const savedTime = Number(localStorage.getItem(progressKey) || 0);
+    const savedTime = getProgress(progressKey);
     video.currentTime = savedTime;
 
     window.getInitialPlaybackTime = () => savedTime;
 
     const interval = setInterval(() => {
-      localStorage.setItem(progressKey, video.currentTime);
+      setProgress(progressKey, video.currentTime);
     }, 5000);
 
     window.videoPlayer = {
@@ -41,12 +51,8 @@ export default function VideoPlayer() {
       toggleMute: () => {
         video.muted = !video.muted;
       },
-      isPlaying: () => {
-        return !video.paused;
-      },
-      isMuted: () => {
-        return video.muted;
-      }
+      isPlaying: () => !video.paused,
+      isMuted: () => video.muted
     };
 
     function handleKeys(e) {
@@ -69,27 +75,16 @@ export default function VideoPlayer() {
     };
   }, [lessonId]);
 
-  function loadNotes() {
-    const saved = localStorage.getItem(notesKey);
-    if (saved) {
-      setNotes(JSON.parse(saved));
-    } else {
-      setNotes([]);
-    }
-  }
-
   function addNote() {
-    const video = videoRef.current;
     if (!noteText.trim()) return;
 
-    const newNote = {
-      time: Math.floor(video.currentTime),
+    const note = {
+      time: Math.floor(videoRef.current.currentTime),
       text: noteText
     };
 
-    const updated = [...notes, newNote];
-    setNotes(updated);
-    localStorage.setItem(notesKey, JSON.stringify(updated));
+    saveNote(notesKey, note);
+    setNotes(getNotes(notesKey));
     setNoteText("");
   }
 
@@ -100,26 +95,15 @@ export default function VideoPlayer() {
   );
 
   return (
-    <div className="video-page" data-testid="video-player-page">
-      <div className="sidebar">
-        <h3>Lessons</h3>
-        <ul>
-          {course.lessons.map(l => (
-            <li
-              key={l.id}
-              data-testid={
-                l.id === Number(lessonId)
-                  ? "current-lesson-item"
-                  : undefined
-              }
-            >
-              <Link to={`/courses/${courseId}/lessons/${l.id}`}>
-                {l.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div
+      className="video-page"
+      data-testid="video-player-page"
+    >
+      <LessonList
+        lessons={course.lessons}
+        courseId={courseId}
+        currentLessonId={lessonId}
+      />
 
       <div
         className="player-container"

@@ -1,0 +1,20 @@
+{
+  "id": 2,
+  "title": "Advanced CSS Techniques",
+  "description": "Master modern CSS techniques including Flexbox, Grid, animations, and responsive design to build visually stunning web interfaces.",
+  "instructor": "John Smith",
+  "lessons": [
+    {
+      "id": 201,
+      "title": "Flexbox Deep Dive",
+      "duration": "10:15",
+      "video_url": "/videos/react_lesson_1.mp4"
+    },
+    {
+      "id": 202,
+      "title": "CSS Grid Layouts",
+      "duration": "11:40",
+      "video_url": "/videos/react_lesson_1.mp4"
+    }
+  ]
+}
